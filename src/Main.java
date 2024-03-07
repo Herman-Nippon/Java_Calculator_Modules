@@ -1,7 +1,8 @@
-import View.CalcWindow;
+//import View.CalcWindow;
+import View.Window;
 
 public class Main {
     public static void main(String[] args) {
-        CalcWindow win = new CalcWindow();
+        Window win = new Window();
     }
 }

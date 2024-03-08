@@ -1,22 +1,29 @@
 package Controller;
 
-import View.CalcWindow;
+import Model.Calculations;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JTextField;
 
 public class EqualsButtonFunctionality implements ActionListener {
+    private JTextField textField;
 
-    private String mathExpression;
-    private CalcWindow win;
-
-    public EqualsButtonFunctionality(CalcWindow win) {
-        this.win = win;
+    public EqualsButtonFunctionality(JTextField textField) {
+        this.textField = textField;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        mathExpression = win.retrieveExpression();
+        // Get the expression from the text field
+        String expression = textField.getText();
+
+        // Process the expression using the Calculations class
+        Calculations calculations = new Calculations();
+        String result = calculations.processExpression(expression);
+
+        // Update the text field with the result
+        textField.setText(result);
     }
 }
+

@@ -1,5 +1,6 @@
 package View;
 
+import Controller.EqualsButtonFunctionality;
 import Controller.ExitButtonFunctionality;
 
 import javax.swing.*;
@@ -37,6 +38,8 @@ public class CalcWindow extends JFrame {
 
             if (button.getText().equals("Exit")) {
                 button.addActionListener(new ExitButtonFunctionality());
+            } else {
+                button.addActionListener(new EqualsButtonFunctionality(textField));
             }
 
             // Padding
@@ -58,9 +61,5 @@ public class CalcWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-    }
-
-    public String retrieveExpression() {
-        return textField.getText();
     }
 }

@@ -18,22 +18,30 @@ public class Calculations {
 
     public String processExpression(String mathExpression) {
         Stack<Character> operatorStack = new Stack<>();
-        Queue<Character> outputQueue = new LinkedList<>();
+        Queue<String> outputQueue = new LinkedList<>();
+        boolean expectOperand = true; // Flag to track if an operand is expected next
 
         for (int i = 0; i < mathExpression.length(); i++) {
             char c = mathExpression.charAt(i);
             if (Character.isDigit(c) || c == '.') {
-                outputQueue.add(c);
-            } else if (isOperator(c)) {
-                while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(c)) {
-                    outputQueue.add(operatorStack.pop());
+                StringBuilder numBuilder = new StringBuilder();
+                while (i < mathExpression.length() && (Character.isDigit(mathExpression.charAt(i)) || mathExpression.charAt(i) == '.')) {
+                    numBuilder.append(mathExpression.charAt(i));
+                    i++;
+                }
+                i--; // Move back one position as the loop will advance the index
+                outputQueue.add(numBuilder.toString());
+                expectOperand = false; // An operand was found
+            } else if (c == '(') {
+                if (!expectOperand) {
+                    // If an operand is not expected, add a multiplication operator
+                    outputQueue.add("*");
                 }
                 operatorStack.push(c);
-            } else if (c == '(') {
-                operatorStack.push(c);
+                expectOperand = true; // After an opening parenthesis, expect an operand
             } else if (c == ')') {
                 while (!operatorStack.isEmpty() && operatorStack.peek() != '(') {
-                    outputQueue.add(operatorStack.pop());
+                    outputQueue.add(String.valueOf(operatorStack.pop()));
                 }
                 if (!operatorStack.isEmpty() && operatorStack.peek() == '(') {
                     operatorStack.pop(); // Discard the '('
@@ -41,45 +49,73 @@ public class Calculations {
                     // Mismatched parentheses
                     return "Mismatched parentheses!";
                 }
+                expectOperand = false; // After a closing parenthesis, an operand is not expected
+            } else if (isOperator(c)) {
+                if (expectOperand && c == '-') {
+                    // Handle negative numbers
+                    outputQueue.add("("); // Add '(' to indicate the start of a negative number
+                    outputQueue.add("0"); // Add '0' as a placeholder for the negative sign
+                    operatorStack.push(c); // Push '-' onto the operator stack
+                } else {
+                    // Regular operator
+                    while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(c)) {
+                        outputQueue.add(String.valueOf(operatorStack.pop()));
+                    }
+                    operatorStack.push(c);
+                    expectOperand = true; // After an operator, expect an operand
+                }
             }
         }
 
         // Pop remaining operators from stack to output queue
         while (!operatorStack.isEmpty()) {
-            char topOperator = operatorStack.pop();
-            if (topOperator == '(') {
-                // Mismatched parentheses
-                return "Mismatched parentheses!";
-            }
-            outputQueue.add(topOperator);
+            outputQueue.add(String.valueOf(operatorStack.pop()));
         }
 
         // Call processRPN method to calculate the answer
         return processRPN(outputQueue);
     }
 
-    private String processRPN(Queue<Character> outputQueue) {
+    private String processRPN(Queue<String> outputQueue) {
         Stack<Double> stack = new Stack<>();
 
         while (!outputQueue.isEmpty()) {
-            char c = outputQueue.poll();
-            if (Character.isDigit(c) || c == '.') {
-                stack.push(Double.parseDouble(String.valueOf(c)));
-            } else if (isOperator(c)) {
+            String token = outputQueue.poll();
+            if (isNumeric(token)) {
+                stack.push(Double.parseDouble(token));
+            } else if (isOperator(token.charAt(0))) {
                 double num2 = stack.pop();
                 double num1 = stack.pop();
-                double result = switch (c) {
-                    case '+' -> num1 + num2;
-                    case '-' -> num1 - num2;
-                    case '*' -> num1 * num2;
-                    case '/' -> (num2 != 0) ? num1 / num2 : Double.NaN;
-                    case '^' -> Math.pow(num1, num2);
-                    default -> 0; // Handle invalid operator gracefully
-                };
+                double result = performOperation(num1, num2, token.charAt(0));
                 stack.push(result);
             }
         }
 
         return String.valueOf(stack.pop());
+    }
+
+    private boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");  // match a number with optional '-' and decimal
+    }
+
+    private double performOperation(double num1, double num2, char operator) {
+        switch (operator) {
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+            case '/':
+                if (num2 != 0) {
+                    return num1 / num2;
+                } else {
+                    return Double.NaN;
+                }
+            case '^':
+                return Math.pow(num1, num2);
+            default:
+                throw new IllegalArgumentException("Invalid operator: " + operator);
+        }
     }
 }

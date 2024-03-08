@@ -1,9 +1,13 @@
 package View;
 
+import Controller.ExitButtonFunctionality;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class CalcWindow extends JFrame {
+    private JTextField textField;
+
     public CalcWindow() {
         setTitle("Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -12,7 +16,7 @@ public class CalcWindow extends JFrame {
         panel.setLayout(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JTextField textField = new JTextField();
+        textField = new JTextField();
         GridBagConstraints textFieldConstraints = new GridBagConstraints();
         textFieldConstraints.gridx = 0;
         textFieldConstraints.gridy = 0;
@@ -30,6 +34,10 @@ public class CalcWindow extends JFrame {
             buttonConstraints.gridy = 1;
             buttonConstraints.fill = GridBagConstraints.HORIZONTAL;
             buttonConstraints.weightx = 0.5;
+
+            if (button.getText().equals("Exit")) {
+                button.addActionListener(new ExitButtonFunctionality());
+            }
 
             // Padding
             buttonConstraints.insets = new Insets(
@@ -50,5 +58,9 @@ public class CalcWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public String retrieveExpression() {
+        return textField.getText();
     }
 }

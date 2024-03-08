@@ -6,6 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTextField;
 
+/**
+ * @apiNote
+ * "Equals" button class;
+ * It is called when the button is pressed.
+ */
 public class EqualsButtonFunctionality implements ActionListener {
     private JTextField textField;
 

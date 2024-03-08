@@ -6,6 +6,14 @@ import Controller.ExitButtonFunctionality;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @apiNote
+ * Main application window class.
+ * Structure:
+ *  textField -- a field for the expression input
+ *  exitButton -- a button for exiting the application
+ *  equalsButton -- a button for sending an expression for calculation
+ */
 public class CalcWindow extends JFrame {
     private JTextField textField;
 

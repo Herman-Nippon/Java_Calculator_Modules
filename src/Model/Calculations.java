@@ -26,8 +26,7 @@ public class Calculations {
             if (Character.isDigit(c) || c == '.') {
                 StringBuilder numBuilder = new StringBuilder();
                 while (i < mathExpression.length() && (Character.isDigit(mathExpression.charAt(i)) || mathExpression.charAt(i) == '.')) {
-                    numBuilder.append(mathExpression.charAt(i));
-                    i++;
+                    numBuilder.append(mathExpression.charAt(i++));
                 }
                 i--; // Move back one position as the loop will advance the index
                 outputQueue.add(numBuilder.toString());
